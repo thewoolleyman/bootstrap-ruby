@@ -18,7 +18,7 @@ RUBY_MINOR_VERSION=${RUBY_VERSION:0:3}
 RUBY_TEENY_VERSION=${RUBY_VERSION:0:5}
 if [ -z $RUBY_PREFIX ]; then RUBY_PREFIX=/usr/local/lib/ruby$RUBY_TEENY_VERSION; fi
 if [ -z $RUBY_PROGRAM_SUFFIX ]; then RUBY_PROGRAM_SUFFIX=$RUBY_TEENY_VERSION; fi
-if [ -z $BUILD_DIR ]; then export BUILD_DIR=~/.cinabox; fi
+if [ -z $BUILD_DIR ]; then export BUILD_DIR=~/.bootstrap-ruby; fi
 
 # Remove existing Debian ruby installation (commented for now, this could screw up existing systems)
 # sudo aptitude remove -y ruby ruby1.8 libruby1.8
