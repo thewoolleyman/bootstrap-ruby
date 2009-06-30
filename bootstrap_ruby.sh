@@ -8,7 +8,7 @@ sudo aptitude install -y build-essential
 sudo aptitude install -y zlib1g zlib1g-dev
 sudo aptitude install -y libssl-dev openssl
 sudo aptitude install -y libreadline5-dev
-sudo aptitude install -y openssh-server openssh-client
+sudo aptitude install -y openssh-server openssh-client ssh
 sudo aptitude install -y wget
 
 # Set default options with allowed overrides
@@ -67,6 +67,9 @@ if [ ! $? = 0 ]; then echo "error building rubygems" && exit 1; fi
 
 # Make symlinks for all executables
 sudo ln -sf `cd $RUBY_PREFIX && pwd`/bin/* /usr/local/bin
+
+# Make symlink at /usr/bin/ruby, so init scripts can be written in ruby
+sudo ln -sf /usr/local/bin/ruby /usr/bin/ruby
 
 # Set up alternatives entry
 # To pick from multiple rubies interactively, use 'sudo update-alternatives --config ruby'
