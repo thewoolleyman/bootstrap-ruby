@@ -4,18 +4,21 @@
 
 # Install build prerequisites
 sudo aptitude update
-sudo aptitude install -y build-essential
-sudo aptitude install -y zlib1g zlib1g-dev
-sudo aptitude install -y libssl-dev openssl
-sudo aptitude install -y libreadline5-dev
-sudo aptitude install -y openssh-server openssh-client ssh
-sudo aptitude install -y wget
+sudo aptitude install -y build-essential zlib1g zlib1g-dev libssl-dev openssl libreadline5-dev openssh-server openssh-client ssh wget
 
 # Set default options with allowed overrides
 DEFAULT_RUBY_VERSION=1.8.6-p287
 if [ -z $RUBY_VERSION ]; then RUBY_VERSION=$DEFAULT_RUBY_VERSION; fi
 RUBY_MINOR_VERSION=${RUBY_VERSION:0:3}
 RUBY_TEENY_VERSION=${RUBY_VERSION:0:5}
+
+INSTALLED_RUBY_VERSION=`ruby --version`
+INSTALLED_RUBY_TEENY_VERSION=`echo ${INSTALLED_RUBY_VERSION:5:5}-p${INSTALLED_RUBY_VERSION:34:4} | tr -d ')'`
+if [ $RUBY_VERSION = $INSTALLED_RUBY_TEENY_VERSION ] && [ ! "$1" = '--force' ]; then
+  echo "Ruby version $INSTALLED_RUBY_TEENY_VERSION is already installed.  Pass --force to force reinstall, or prepend RUBY_VERSION=x.y.z-p123"
+  exit 0
+fi
+
 if [ -z $RUBY_PREFIX ]; then RUBY_PREFIX=/usr/local/lib/ruby$RUBY_TEENY_VERSION; fi
 if [ -z $RUBY_PROGRAM_SUFFIX ]; then RUBY_PROGRAM_SUFFIX=$RUBY_TEENY_VERSION; fi
 if [ -z $BUILD_DIR ]; then export BUILD_DIR=~/.bootstrap-ruby; fi
