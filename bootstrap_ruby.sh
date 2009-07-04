@@ -14,8 +14,8 @@ RUBY_TEENY_VERSION=${RUBY_VERSION:0:5}
 
 INSTALLED_RUBY_VERSION=`ruby --version`
 INSTALLED_RUBY_TEENY_VERSION=`echo ${INSTALLED_RUBY_VERSION:5:5}-p${INSTALLED_RUBY_VERSION:34:4} | tr -d ')'`
-if [ $RUBY_VERSION = $INSTALLED_RUBY_TEENY_VERSION ] && [ ! "$1" = '--force' ]; then
-  echo "Ruby version $INSTALLED_RUBY_TEENY_VERSION is already installed.  Pass --force to force reinstall, or prepend RUBY_VERSION=x.y.z-p123"
+if [ $RUBY_VERSION = $INSTALLED_RUBY_TEENY_VERSION ] && [ -z $BOOTSTRAP_RUBY_FORCE ]; then
+  echo "Ruby version $INSTALLED_RUBY_TEENY_VERSION is already installed.  Prepend RUBY_VERSION=x.y.z-p123 for a specific version, or BOOTSTRAP_RUBY_FORCE=true to reinstall $DEFAULT_RUBY_VERSION"
   exit 0
 fi
 
