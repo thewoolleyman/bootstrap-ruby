@@ -20,7 +20,9 @@ if [ $RUBY_VERSION = $INSTALLED_RUBY_TEENY_VERSION ] && [ -z $BOOTSTRAP_RUBY_FOR
 fi
 
 if [ -z $RUBY_PREFIX ]; then RUBY_PREFIX=/usr/local/lib/ruby$RUBY_TEENY_VERSION; fi
-if [ -z $RUBY_PROGRAM_SUFFIX ]; then RUBY_PROGRAM_SUFFIX=$RUBY_TEENY_VERSION; fi
+if [ -z $NO_RUBY_PROGRAM_SUFFIX]; then # Rubygems currently has issues with format-executable being non-default
+  if [ -z $RUBY_PROGRAM_SUFFIX ]; then RUBY_PROGRAM_SUFFIX=$RUBY_TEENY_VERSION; fi
+fi
 if [ -z $BUILD_DIR ]; then export BUILD_DIR=~/.bootstrap-ruby; fi
 
 # Remove existing Debian ruby installation (commented for now, this could screw up existing systems)
