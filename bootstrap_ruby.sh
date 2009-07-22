@@ -58,9 +58,9 @@ rm -rf .ext/rdoc
 sudo make install
 if [ ! $? = 0 ]; then echo "error running 'sudo make install'" && exit 1; fi
 
-# Download and install RubyGems
-if [ -z $RUBYGEMS_MIRROR_ID ]; then RUBYGEMS_MIRROR_ID=57643; fi
-if [ -z $RUBYGEMS_VERSION ]; then RUBYGEMS_VERSION=1.3.4; fi
+# Download and install RubyGems - TODO: is there an easy way to automate the mirror and version?
+if [ -z $RUBYGEMS_MIRROR_ID ]; then RUBYGEMS_MIRROR_ID=60718; fi
+if [ -z $RUBYGEMS_VERSION ]; then RUBYGEMS_VERSION=1.3.5; fi
 cd $BUILD_DIR
 rm -rf rubygems-$RUBYGEMS_VERSION.tgz
 wget http://rubyforge.org/frs/download.php/$RUBYGEMS_MIRROR_ID/rubygems-$RUBYGEMS_VERSION.tgz
