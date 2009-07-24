@@ -12,6 +12,7 @@ if [ -z $RUBY_VERSION ]; then RUBY_VERSION=$DEFAULT_RUBY_VERSION; fi
 RUBY_MINOR_VERSION=${RUBY_VERSION:0:3}
 RUBY_TEENY_VERSION=${RUBY_VERSION:0:5}
 
+# Do not reinstall same version unless BOOTSTRAP_RUBY_FORCE is passed
 INSTALLED_RUBY_VERSION=`ruby --version`
 INSTALLED_RUBY_TEENY_VERSION=`echo ${INSTALLED_RUBY_VERSION:5:5}-p${INSTALLED_RUBY_VERSION:34:4} | tr -d ')'`
 if [ $RUBY_VERSION = $INSTALLED_RUBY_TEENY_VERSION ] && [ -z $BOOTSTRAP_RUBY_FORCE ]; then
@@ -19,13 +20,22 @@ if [ $RUBY_VERSION = $INSTALLED_RUBY_TEENY_VERSION ] && [ -z $BOOTSTRAP_RUBY_FOR
   exit 0
 fi
 
-if [ -z $RUBY_PREFIX ]; then RUBY_PREFIX=/usr/local/lib/ruby$RUBY_TEENY_VERSION; fi
-if [ -z $NO_RUBY_PROGRAM_SUFFIX]; then # Rubygems currently has issues with format-executable being non-default
+# Rubygems currently has issues correctly handling prefix and program-suffix.  Gem executables will not be
+# found correctly or put on the path, so turn off prefix and suffix unless they are explicitly specified.
+if [ -z $RUBY_PREFIX ]; then NO_RUBY_PREFIX=true; fi
+if [ -z $RUBY_PROGRAM_SUFFIX ]; then NO_RUBY_PROGRAM_SUFFIX=true; fi
+
+# Set a default RUBY_PREFIX and RUBY_PROGRAM_SUFFIX unless NO_RUBY_PREFIX or NO_RUBY_SUFFIX are set
+if [ -z $NO_RUBY_PREFIX ]; then
+  if [ -z $RUBY_PREFIX ]; then RUBY_PREFIX=/usr/local/lib/ruby$RUBY_TEENY_VERSION; fi
+fi
+if [ -z $NO_RUBY_PROGRAM_SUFFIX ]; then 
   if [ -z $RUBY_PROGRAM_SUFFIX ]; then RUBY_PROGRAM_SUFFIX=$RUBY_TEENY_VERSION; fi
 fi
+
 if [ -z $BUILD_DIR ]; then export BUILD_DIR=~/.bootstrap-ruby; fi
 
-# Remove existing Debian ruby installation (commented for now, this could screw up existing systems)
+# Remove existing Debian ruby installation (commented out for now, this could screw up existing systems)
 # sudo aptitude remove -y ruby ruby1.8 libruby1.8
 
 # Download and unpack Ruby distribution
@@ -50,8 +60,17 @@ if [ $RUBY_VERSION = '1.8.7-p72' ]; then
   cp ext/openssl/ossl_digest.c.patched ext/openssl/ossl_digest.c
 fi
 
+# Configure with options
 if [ $RUBY_MINOR_VERSION = 1.8 ]; then VERSION_OPTS=--disable-pthreads; else VERSION_OPTS=; fi
-./configure $VERSION_OPTS --prefix=$RUBY_PREFIX --program-suffix=$RUBY_PROGRAM_SUFFIX
+if [ ! -z $RUBY_PREFIX ]; then 
+  PREFIX_OPT="--prefix=$RUBY_PREFIX"
+fi
+if [ ! -z $RUBY_PROGRAM_SUFFIX ]; then 
+  PROGRAM_SUFFIX_OPT="--program-suffix=$RUBY_PROGRAM_SUFFIX"
+fi
+./configure $VERSION_OPTS $PREFIX_OPT $PROGRAM_SUFFIX_OPT
+
+# Make and install
 make
 if [ ! $? = 0 ]; then echo "error running 'make'" && exit 1; fi
 rm -rf .ext/rdoc
@@ -86,3 +105,12 @@ sudo update-alternatives --install \
  --slave /usr/local/bin/rdoc rdoc $RUBY_PREFIX/bin/rdoc$RUBY_PROGRAM_SUFFIX \
  --slave /usr/local/bin/ri ri $RUBY_PREFIX/bin/ri$RUBY_PROGRAM_SUFFIX \
  --slave /usr/local/bin/testrb testrb $RUBY_PREFIX/bin/testrb$RUBY_PROGRAM_SUFFIX
+ 
+sudo update-alternatives --set ruby $RUBY_PREFIX/bin/ruby$RUBY_PROGRAM_SUFFIX
+
+# Warn user about path if prefix is not default (/usr/local/bin)
+if [ ! -z $RUBY_PREFIX ]; then 
+  echo; echo;
+  echo "Please put $RUBY_PREFIX/bin on your path or gem executables may not be found."
+  echo; echo;
+fi
