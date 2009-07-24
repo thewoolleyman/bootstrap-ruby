@@ -77,18 +77,6 @@ rm -rf .ext/rdoc
 sudo make install
 if [ ! $? = 0 ]; then echo "error running 'sudo make install'" && exit 1; fi
 
-# Download and install RubyGems - TODO: is there an easy way to automate the mirror and version?
-if [ -z $RUBYGEMS_MIRROR_ID ]; then RUBYGEMS_MIRROR_ID=60718; fi
-if [ -z $RUBYGEMS_VERSION ]; then RUBYGEMS_VERSION=1.3.5; fi
-cd $BUILD_DIR
-rm -rf rubygems-$RUBYGEMS_VERSION.tgz
-wget http://rubyforge.org/frs/download.php/$RUBYGEMS_MIRROR_ID/rubygems-$RUBYGEMS_VERSION.tgz
-rm -rf rubygems-$RUBYGEMS_VERSION
-tar -zxvf rubygems-$RUBYGEMS_VERSION.tgz
-cd $BUILD_DIR/rubygems-$RUBYGEMS_VERSION
-sudo $RUBY_PREFIX/bin/ruby$RUBY_PROGRAM_SUFFIX setup.rb
-if [ ! $? = 0 ]; then echo "error building rubygems" && exit 1; fi
-
 # Make symlinks for all executables
 sudo ln -sf `cd $RUBY_PREFIX && pwd`/bin/* /usr/local/bin
 
@@ -107,8 +95,21 @@ sudo update-alternatives --install \
  --slave /usr/local/bin/rdoc rdoc $RUBY_PREFIX/bin/rdoc$RUBY_PROGRAM_SUFFIX \
  --slave /usr/local/bin/ri ri $RUBY_PREFIX/bin/ri$RUBY_PROGRAM_SUFFIX \
  --slave /usr/local/bin/testrb testrb $RUBY_PREFIX/bin/testrb$RUBY_PROGRAM_SUFFIX
- 
+
+# Set default alternative to the one we just installed 
 sudo update-alternatives --set ruby $RUBY_PREFIX/bin/ruby$RUBY_PROGRAM_SUFFIX
+
+# Download and install RubyGems - TODO: is there an easy way to automate the mirror and version?
+if [ -z $RUBYGEMS_MIRROR_ID ]; then RUBYGEMS_MIRROR_ID=60718; fi
+if [ -z $RUBYGEMS_VERSION ]; then RUBYGEMS_VERSION=1.3.5; fi
+cd $BUILD_DIR
+rm -rf rubygems-$RUBYGEMS_VERSION.tgz
+wget http://rubyforge.org/frs/download.php/$RUBYGEMS_MIRROR_ID/rubygems-$RUBYGEMS_VERSION.tgz
+rm -rf rubygems-$RUBYGEMS_VERSION
+tar -zxvf rubygems-$RUBYGEMS_VERSION.tgz
+cd $BUILD_DIR/rubygems-$RUBYGEMS_VERSION
+sudo $RUBY_PREFIX/bin/ruby$RUBY_PROGRAM_SUFFIX setup.rb
+if [ ! $? = 0 ]; then echo "error building rubygems" && exit 1; fi
 
 # Warn user about path if prefix is not default (/usr/local/bin)
 if [ ! -z $RUBY_PREFIX ]; then 
