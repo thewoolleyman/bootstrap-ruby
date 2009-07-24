@@ -94,6 +94,8 @@ sudo ln -sf `cd $RUBY_PREFIX && pwd`/bin/* /usr/local/bin
 
 # Make symlink at /usr/bin/ruby, so init scripts can be written in ruby
 sudo ln -sf /usr/local/bin/ruby /usr/bin/ruby
+# Make symlink at /bin/ruby, in case there was already one there or something wants it there
+sudo ln -sf /usr/local/bin/ruby /bin/ruby
 
 # Set up alternatives entry
 # To pick from multiple rubies interactively, use 'sudo update-alternatives --config ruby'
