@@ -48,6 +48,7 @@ INSTRUCTIONS:
 * ./bootstrap_ruby.sh
 * You can also install a specific version of ruby:
   * RUBY\_VERSION=1.8.6-p287 ./bootstrap_ruby.sh
+* There are several other environment variables which control configuration, look at the source of the script for details.
 * Ensure Ruby got installed by typing 'ruby --version'
 * Review the output.  If there were errors, fix and rerun './bootstrap_ruby.sh'.
   Pass the '--force' param to redo already-completed steps
