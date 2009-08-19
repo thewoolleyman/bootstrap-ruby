@@ -25,11 +25,11 @@ fi
 if [ -z $RUBY_PREFIX ]; then NO_RUBY_PREFIX=true; fi
 if [ -z $RUBY_PROGRAM_SUFFIX ]; then NO_RUBY_PROGRAM_SUFFIX=true; fi
 
-# Set a default RUBY_PREFIX and RUBY_PROGRAM_SUFFIX unless NO_RUBY_PREFIX or NO_RUBY_SUFFIX are set
+# Set a default RUBY_PREFIX and RUBY_PROGRAM_SUFFIX unless NO_RUBY_PREFIX or NO_RUBY_PROGRAM_SUFFIX are set
 if [ -z $NO_RUBY_PREFIX ]; then
   if [ -z $RUBY_PREFIX ]; then RUBY_PREFIX=/usr/local/lib/ruby$RUBY_TEENY_VERSION; fi
 fi
-if [ -z $NO_RUBY_PROGRAM_SUFFIX ]; then 
+if [ -z $NO_RUBY_PROGRAM_SUFFIX ]; then
   if [ -z $RUBY_PROGRAM_SUFFIX ]; then RUBY_PROGRAM_SUFFIX=$RUBY_TEENY_VERSION; fi
 fi
 
