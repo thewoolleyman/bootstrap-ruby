@@ -100,8 +100,10 @@ INSTALLED_RUBY_VERSION=`ruby --version`
 INSTALLED_RUBY_TEENY_VERSION=`echo ${INSTALLED_RUBY_VERSION:5:5}-p${INSTALLED_RUBY_VERSION:34:4} | tr -d ')'`
 if [ $RUBY_VERSION = $INSTALLED_RUBY_TEENY_VERSION ] && [ -z $INSTALL_RUBY_FORCE ]; then
   echo "Ruby version $INSTALLED_RUBY_TEENY_VERSION is already installed.  Prepend RUBY_VERSION=x.y.z-p123 for a specific version, or INSTALL_RUBY_FORCE=true to reinstall $DEFAULT_RUBY_VERSION"
+  RUBY_EXECUTABLE=`which ruby`
 else
   install_ruby
+  RUBY_EXECUTABLE=$RUBY_PREFIX/bin/ruby$RUBY_PROGRAM_SUFFIX
 fi
 
 function install_rubygems {
@@ -114,7 +116,7 @@ function install_rubygems {
   rm -rf rubygems-$RUBYGEMS_VERSION
   tar -zxvf rubygems-$RUBYGEMS_VERSION.tgz
   cd $BUILD_DIR/rubygems-$RUBYGEMS_VERSION
-  sudo $RUBY_PREFIX/bin/ruby$RUBY_PROGRAM_SUFFIX setup.rb
+  sudo $RUBY_EXECUTABLE setup.rb
   if [ ! $? = 0 ]; then echo "error building rubygems" && exit 1; fi
 }
 
