@@ -96,14 +96,20 @@ function install_ruby {
 }
 
 # Do not reinstall same version unless INSTALL_RUBY_FORCE is passed
-INSTALLED_RUBY_VERSION=`ruby --version`
-INSTALLED_RUBY_TEENY_VERSION=`echo ${INSTALLED_RUBY_VERSION:5:5}-p${INSTALLED_RUBY_VERSION:34:4} | tr -d ')'`
-if [ $RUBY_VERSION = $INSTALLED_RUBY_TEENY_VERSION ] && [ -z $INSTALL_RUBY_FORCE ]; then
-  echo "Ruby version $INSTALLED_RUBY_TEENY_VERSION is already installed.  Prepend RUBY_VERSION=x.y.z-p123 for a specific version, or INSTALL_RUBY_FORCE=true to reinstall $DEFAULT_RUBY_VERSION"
-  RUBY_EXECUTABLE=`which ruby`
+EXISTING_RUBY_VERSION=`ruby --version`
+EXISTING_RUBY_TEENY_VERSION=`echo ${EXISTING_RUBY_VERSION:5:5}-p${EXISTING_RUBY_VERSION:34:4} | tr -d ')'`
+if [ $RUBY_VERSION = $EXISTING_RUBY_TEENY_VERSION ] && [ -z $INSTALL_RUBY_FORCE ]; then
+  echo "Ruby version $EXISTING_RUBY_TEENY_VERSION is already installed.  Prepend RUBY_VERSION=x.y.z-p123 for a specific version, or INSTALL_RUBY_FORCE=true to reinstall $DEFAULT_RUBY_VERSION"
+  EXISTING_RUBY_EXEC=`which ruby`
+  CANONICAL_RUBY_EXEC=`readlink -f $EXISTING_RUBY_EXEC`
+  RUBY_BINDIR=${CANONICAL_RUBY_EXEC%ruby*}
+  RUBY_PROGRAM_SUFFIX=${CANONICAL_RUBY_EXEC##*ruby}
 else
   install_ruby
-  RUBY_EXECUTABLE=$RUBY_PREFIX/bin/ruby$RUBY_PROGRAM_SUFFIX
+  CANONICAL_RUBY_EXEC=$RUBY_PREFIX/bin/ruby$RUBY_PROGRAM_SUFFIX
+  RUBY_BINDIR=$RUBY_PREFIX/bin
+  # Always reinstall rubygems if we installed ruby
+  INSTALL_RUBYGEMS_FORCE='true'
 fi
 
 function install_rubygems {
@@ -116,7 +122,7 @@ function install_rubygems {
   rm -rf rubygems-$RUBYGEMS_VERSION
   tar -zxvf rubygems-$RUBYGEMS_VERSION.tgz
   cd $BUILD_DIR/rubygems-$RUBYGEMS_VERSION
-  sudo $RUBY_EXECUTABLE setup.rb
+  sudo $CANONICAL_RUBY_EXEC setup.rb
   if [ ! $? = 0 ]; then echo "error building rubygems" && exit 1; fi
 }
 
@@ -127,6 +133,9 @@ if [ $? = 0 ] && [ -z $INSTALL_RUBYGEMS_FORCE ]; then
 else
   install_rubygems
 fi
+# if it doesn't already exist, make a 'gem' symlink with no suffix in the same location as the ruby executable, 
+# because RubyGems will (currently) format the executable with RUBY_PROGRAM_SUFFICX, and not create a 'gem' exec by default
+if [ ! -e $RUBY_BINDIR/gem ]; then sudo ln -sf $RUBY_BINDIR/gem$RUBY_PROGRAM_SUFFIX $RUBY_BINDIR/gem; fi  
 
 # Warn user about path if prefix is not default (/usr/local/bin)
 if [ ! -z $RUBY_PREFIX ]; then 
@@ -134,3 +143,14 @@ if [ ! -z $RUBY_PREFIX ]; then
   echo "Please put $RUBY_PREFIX/bin on your path or gem executables may not be found."
   echo; echo;
 fi
+
+# DEBUGGING OUTPUT FOR NOW
+echo; echo;
+echo "RUBY_VERSION = '$RUBY_VERSION'"
+echo "EXISTING_RUBY_TEENY_VERSION = '$EXISTING_RUBY_TEENY_VERSION'"
+echo "RUBY_PREFIX = '$RUBY_PREFIX'"
+echo "RUBY_PROGRAM_SUFFIX = '$RUBY_PROGRAM_SUFFIX'"
+echo "RUBY_BINDIR = '$RUBY_BINDIR'"
+echo "CANONICAL_RUBY_EXEC = '$CANONICAL_RUBY_EXEC'"
+echo "EXISTING_RUBY_EXEC = '$EXISTING_RUBY_EXEC'"
+
