@@ -12,14 +12,6 @@ if [ -z $RUBY_VERSION ]; then RUBY_VERSION=$DEFAULT_RUBY_VERSION; fi
 RUBY_MINOR_VERSION=${RUBY_VERSION:0:3}
 RUBY_TEENY_VERSION=${RUBY_VERSION:0:5}
 
-# Do not reinstall same version unless BOOTSTRAP_RUBY_FORCE is passed
-INSTALLED_RUBY_VERSION=`ruby --version`
-INSTALLED_RUBY_TEENY_VERSION=`echo ${INSTALLED_RUBY_VERSION:5:5}-p${INSTALLED_RUBY_VERSION:34:4} | tr -d ')'`
-if [ $RUBY_VERSION = $INSTALLED_RUBY_TEENY_VERSION ] && [ -z $BOOTSTRAP_RUBY_FORCE ]; then
-  echo "Ruby version $INSTALLED_RUBY_TEENY_VERSION is already installed.  Prepend RUBY_VERSION=x.y.z-p123 for a specific version, or BOOTSTRAP_RUBY_FORCE=true to reinstall $DEFAULT_RUBY_VERSION"
-  exit 0
-fi
-
 # Rubygems currently has issues correctly handling prefix and program-suffix.  Gem executables will not be
 # found correctly or put on the path, so turn off prefix and suffix unless they are explicitly specified.
 if [ -z $RUBY_PREFIX ]; then NO_RUBY_PREFIX=true; fi
@@ -38,9 +30,19 @@ if [ -z $BUILD_DIR ]; then export BUILD_DIR=~/.bootstrap-ruby; fi
 # Remove existing Debian ruby installation (commented out for now, this could screw up existing systems)
 # sudo aptitude remove -y ruby ruby1.8 libruby1.8
 
-# Download and unpack Ruby distribution
+# Make build dir
 mkdir -p $BUILD_DIR
 cd $BUILD_DIR
+
+# Do not reinstall same version unless BOOTSTRAP_RUBY_FORCE is passed
+INSTALLED_RUBY_VERSION=`ruby --version`
+INSTALLED_RUBY_TEENY_VERSION=`echo ${INSTALLED_RUBY_VERSION:5:5}-p${INSTALLED_RUBY_VERSION:34:4} | tr -d ')'`
+if [ $RUBY_VERSION = $INSTALLED_RUBY_TEENY_VERSION ] && [ -z $BOOTSTRAP_RUBY_FORCE ]; then
+  echo "Ruby version $INSTALLED_RUBY_TEENY_VERSION is already installed.  Prepend RUBY_VERSION=x.y.z-p123 for a specific version, or BOOTSTRAP_RUBY_FORCE=true to reinstall $DEFAULT_RUBY_VERSION"
+  exit 0
+fi
+
+# Download and unpack Ruby distribution
 rm -rf ruby-$RUBY_VERSION.tar.gz
 wget ftp://ftp.ruby-lang.org/pub/ruby/$RUBY_MINOR_VERSION/ruby-$RUBY_VERSION.tar.gz
 rm -rf ruby-$RUBY_VERSION
@@ -100,6 +102,7 @@ sudo update-alternatives --install \
 sudo update-alternatives --set ruby $RUBY_PREFIX/bin/ruby$RUBY_PROGRAM_SUFFIX
 
 # Download and install RubyGems - TODO: is there an easy way to automate the mirror and version?
+# TODO: Separate ruby and rubygems install into function, run rubygems install even if ruby installation is not performed
 if [ -z $RUBYGEMS_MIRROR_ID ]; then RUBYGEMS_MIRROR_ID=60718; fi
 if [ -z $RUBYGEMS_VERSION ]; then RUBYGEMS_VERSION=1.3.5; fi
 cd $BUILD_DIR
