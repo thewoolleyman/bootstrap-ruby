@@ -36,14 +36,16 @@ cd $BUILD_DIR
 
 function install_ruby {
   # Download and unpack Ruby distribution
-  rm -rf ruby-$RUBY_VERSION.tar.gz
+  sudo rm -f ruby-$RUBY_VERSION.tar.gz
   wget ftp://ftp.ruby-lang.org/pub/ruby/$RUBY_MINOR_VERSION/ruby-$RUBY_VERSION.tar.gz
-  rm -rf ruby-$RUBY_VERSION
+  sudo rm -f ruby-$RUBY_VERSION
   tar -zxvf ruby-$RUBY_VERSION.tar.gz
 
   # Update extensions Setup by deleting “Win” lines (Win32API and win32ole) and uncommenting all other lines
   if [ ! -e ruby-$RUBY_VERSION/ext/Setup.orig ]; then cp ruby-$RUBY_VERSION/ext/Setup ruby-$RUBY_VERSION/ext/Setup.orig; fi
+  sudo rm -f /tmp/Setup.new
   cat ruby-$RUBY_VERSION/ext/Setup.orig | grep -iv 'win' | grep -iv 'nodynamic' | sed -n -e 's/#\(.*\)/\1/p' > /tmp/Setup.new
+  sudo rm -f /tmp/Setup
   cp /tmp/Setup.new ruby-$RUBY_VERSION/ext/Setup
 
   # Configure, make, and install
@@ -68,7 +70,7 @@ function install_ruby {
   # Make and install
   make
   if [ ! $? = 0 ]; then echo "error running 'make'" && exit 1; fi
-  rm -rf .ext/rdoc
+  sudo rm -rf .ext/rdoc
   sudo make install
   if [ ! $? = 0 ]; then echo "error running 'sudo make install'" && exit 1; fi
 
@@ -117,9 +119,9 @@ function install_rubygems {
   if [ -z $RUBYGEMS_MIRROR_ID ]; then RUBYGEMS_MIRROR_ID=60718; fi
   if [ -z $RUBYGEMS_VERSION ]; then RUBYGEMS_VERSION=1.3.5; fi
   cd $BUILD_DIR
-  rm -rf rubygems-$RUBYGEMS_VERSION.tgz
+  rm -r rubygems-$RUBYGEMS_VERSION.tgz
   wget http://rubyforge.org/frs/download.php/$RUBYGEMS_MIRROR_ID/rubygems-$RUBYGEMS_VERSION.tgz
-  rm -rf rubygems-$RUBYGEMS_VERSION
+  rm -r rubygems-$RUBYGEMS_VERSION
   tar -zxvf rubygems-$RUBYGEMS_VERSION.tgz
   cd $BUILD_DIR/rubygems-$RUBYGEMS_VERSION
   sudo $CANONICAL_RUBY_EXEC setup.rb
