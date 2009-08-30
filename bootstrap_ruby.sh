@@ -27,8 +27,11 @@ fi
 
 if [ -z $BUILD_DIR ]; then export BUILD_DIR=~/.bootstrap-ruby; fi
 
-# Remove existing Debian ruby installation (commented out for now, this could screw up existing systems)
-# sudo aptitude remove -y ruby ruby1.8 libruby1.8
+if [ $RUBY_TEENY_VERSION = '1.8.7' ]; then 
+  # Remove existing Debian ruby installation, because otherwise rubygems won't work under source install of 1.8.7
+  # Sorry if this breaks you, caveat emptor
+  sudo aptitude remove -y ruby ruby1.8 libruby1.8
+fi
 
 # Make build dir
 mkdir -p $BUILD_DIR
