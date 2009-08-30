@@ -27,7 +27,7 @@ fi
 
 if [ -z $BUILD_DIR ]; then export BUILD_DIR=~/.bootstrap-ruby; fi
 
-if [ $RUBY_TEENY_VERSION = '1.8.7' ]; then 
+if [ $RUBY_TEENY_VERSION = '1.8.7' ] || [ "$FORCE_APTITUDE_RUBY_UNINSTALL" = 'true' ]; then 
   # Remove existing Debian ruby installation, because otherwise rubygems won't work under source install of 1.8.7
   # Sorry if this breaks you, caveat emptor
   sudo aptitude remove -y ruby ruby1.8 libruby1.8
