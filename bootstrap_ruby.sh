@@ -7,6 +7,7 @@ sudo aptitude update
 sudo aptitude install -y build-essential zlib1g zlib1g-dev libssl-dev openssl libreadline5-dev openssh-server openssh-client ssh wget
 
 # Set default options with allowed overrides
+# Current ruby versions: 1.8.6-p287, 1.8.7-p72, 1.9.1-p243
 DEFAULT_RUBY_VERSION=1.8.6-p287
 if [ -z $RUBY_VERSION ]; then RUBY_VERSION=$DEFAULT_RUBY_VERSION; fi
 RUBY_MINOR_VERSION=${RUBY_VERSION:0:3}
