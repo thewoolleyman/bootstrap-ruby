@@ -6,9 +6,11 @@
 which emerge
 if [ $? = 0 ]; then
   # Gentoo
+  DISTRO='gentoo'
   sudo emerge zlib # TODO: Add other libs required on a clean gentoo distro
 else
   # Debian
+  DISTRO='debian'
   sudo aptitude update
   sudo aptitude install -y build-essential zlib1g zlib1g-dev libssl-dev openssl libreadline5-dev openssh-server openssh-client ssh wget
 fi
@@ -38,12 +40,16 @@ if [ -z $BUILD_DIR ]; then export BUILD_DIR=~/.bootstrap-ruby; fi
 if [ $RUBY_TEENY_VERSION = '1.8.7' ] || [ "$FORCE_RUBY_UNINSTALL" = 'true' ]; then 
   # Remove existing Debian ruby installation, because otherwise rubygems won't work under source install of 1.8.7
   # Sorry if this breaks you, caveat emptor
-  sudo aptitude remove -y ruby ruby1.8 libruby1.8
+  FORCE_RUBY_UNINSTALL = 'true'
 fi
 
-if [ "$FORCE_RUBY_UNINSTALL" = 'true' ]; then 
-  # Remove existing Gentoo ruby installation
-  sudo emerge -C ruby
+if [ "$FORCE_RUBY_UNINSTALL" = 'true' ]; then
+  if [ "$DISTRO" = 'gentoo']; then 
+    # Remove existing Gentoo ruby installation
+    sudo emerge -C ruby
+  else
+    sudo aptitude remove -y ruby ruby1.8 libruby1.8
+  fi
 fi
 
 # Make build dir
