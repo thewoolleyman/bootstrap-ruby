@@ -3,8 +3,15 @@
 # This script is tested on Ubuntu Linux, but it should run on most Debian distros
 
 # Install build prerequisites
-sudo aptitude update
-sudo aptitude install -y build-essential zlib1g zlib1g-dev libssl-dev openssl libreadline5-dev openssh-server openssh-client ssh wget
+which emerge
+if [ $? = 0 ]; then
+  # Gentoo
+  sudo emerge zlib # TODO: Add other libs required on a clean gentoo distro
+else
+  # Debian
+  sudo aptitude update
+  sudo aptitude install -y build-essential zlib1g zlib1g-dev libssl-dev openssl libreadline5-dev openssh-server openssh-client ssh wget
+fi
 
 # Set default options with allowed overrides
 # Current ruby versions: 1.8.6-p287, 1.8.7-p72, 1.9.1-p243
@@ -28,10 +35,15 @@ fi
 
 if [ -z $BUILD_DIR ]; then export BUILD_DIR=~/.bootstrap-ruby; fi
 
-if [ $RUBY_TEENY_VERSION = '1.8.7' ] || [ "$FORCE_APTITUDE_RUBY_UNINSTALL" = 'true' ]; then 
+if [ $RUBY_TEENY_VERSION = '1.8.7' ] || [ "$FORCE_RUBY_UNINSTALL" = 'true' ]; then 
   # Remove existing Debian ruby installation, because otherwise rubygems won't work under source install of 1.8.7
   # Sorry if this breaks you, caveat emptor
   sudo aptitude remove -y ruby ruby1.8 libruby1.8
+fi
+
+if [ "$FORCE_RUBY_UNINSTALL" = 'true' ]; then 
+  # Remove existing Gentoo ruby installation
+  sudo emerge -C ruby
 fi
 
 # Make build dir
