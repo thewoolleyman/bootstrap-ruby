@@ -7,7 +7,9 @@ which emerge
 if [ $? = 0 ]; then
   # Gentoo
   DISTRO='gentoo'
-  sudo emerge zlib # TODO: Add other libs required on a clean gentoo distro
+  # TODO: how do you check for already-installed packages on Gentoo?  Disable package install for now...
+  # sudo emerge gentoolkit
+  # sudo emerge zlib # TODO: Add other libs required on a clean gentoo distro
 else
   # Debian
   DISTRO='debian'
