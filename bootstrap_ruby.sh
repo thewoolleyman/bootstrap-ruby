@@ -7,9 +7,23 @@ which emerge
 if [ $? = 0 ]; then
   # Gentoo
   DISTRO='gentoo'
-  # TODO: how do you check for already-installed packages on Gentoo?  Disable package install for now...
-  # sudo emerge gentoolkit
-  # sudo emerge zlib # TODO: Add other libs required on a clean gentoo distro
+  
+  qlist -I | grep gentoolkit
+  if [ ! $? = 0 ]; then
+    sudo emerge gentoolkit
+  fi
+  qlist -I | grep zlib
+  if [ ! $? = 0 ]; then
+    sudo emerge zlib
+  fi
+  qlist -I | grep readline
+  if [ ! $? = 0 ]; then
+    sudo emerge readline
+  fi
+  qlist -I | grep wget
+  if [ ! $? = 0 ]; then
+    sudo emerge wget
+  fi
 else
   # Debian
   DISTRO='debian'
