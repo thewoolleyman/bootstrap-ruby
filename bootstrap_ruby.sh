@@ -46,7 +46,8 @@ fi
 if [ "$FORCE_RUBY_UNINSTALL" = 'true' ]; then
   if [ "$DISTRO" = 'gentoo']; then 
     # Remove existing Gentoo ruby installation
-    sudo emerge -C ruby
+    sudo emerge -C ruby rubygems
+    unset RUBYOPT
   else
     sudo aptitude remove -y ruby ruby1.8 libruby1.8
   fi
