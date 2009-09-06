@@ -61,7 +61,7 @@ fi
 
 if [ "$FORCE_RUBY_UNINSTALL" = 'true' ]; then
   # Remove existing ruby installation
-  if [ "$DISTRO" = 'gentoo']; then 
+  if [ "$DISTRO" = 'gentoo' ]; then 
     sudo emerge -C ruby rubygems
     unset RUBYOPT
   else
