@@ -62,7 +62,7 @@ fi
 if [ "$FORCE_RUBY_UNINSTALL" = 'true' ]; then
   # Remove existing ruby installation
   if [ "$DISTRO" = 'gentoo' ]; then 
-    sudo emerge -C ruby rubygems
+    sudo emerge -C ruby rubygems mysql-ruby ruby-config ruby-dbi ruby-postgres ruby-shadow
     unset RUBYOPT
   else
     sudo aptitude remove -y ruby ruby1.8 libruby1.8
@@ -138,8 +138,10 @@ function install_ruby {
 
 # Do not reinstall same version unless INSTALL_RUBY_FORCE is passed
 EXISTING_RUBY_VERSION=`ruby --version`
-EXISTING_RUBY_TEENY_VERSION=`echo ${EXISTING_RUBY_VERSION:5:5}-p${EXISTING_RUBY_VERSION:34:4} | tr -d ')'`
-if [ $RUBY_VERSION = $EXISTING_RUBY_TEENY_VERSION ] && [ -z $INSTALL_RUBY_FORCE ]; then
+# ruby --version format is different between 1.8 and 1.9, need better solution to compare patchlevels
+#EXISTING_RUBY_TEENY_VERSION=`echo ${EXISTING_RUBY_VERSION:5:5}-p${EXISTING_RUBY_VERSION:34:4} | tr -d ')'`
+EXISTING_RUBY_TEENY_VERSION=`echo ${EXISTING_RUBY_VERSION:5:5}`
+if [ $RUBY_TEENY_VERSION = $EXISTING_RUBY_TEENY_VERSION ] && [ -z $INSTALL_RUBY_FORCE ]; then
   echo "Ruby version $EXISTING_RUBY_TEENY_VERSION is already installed.  Prepend RUBY_VERSION=x.y.z-p123 for a specific version, or INSTALL_RUBY_FORCE=true to reinstall $DEFAULT_RUBY_VERSION"
   EXISTING_RUBY_EXEC=`which ruby`
   CANONICAL_RUBY_EXEC=`readlink -f $EXISTING_RUBY_EXEC`
