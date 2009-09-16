@@ -3,8 +3,33 @@
 # This script is tested on Ubuntu Linux, but it should run on most Debian distros
 
 # Install build prerequisites
-sudo aptitude update
-sudo aptitude install -y build-essential zlib1g zlib1g-dev libssl-dev openssl libreadline5-dev openssh-server openssh-client ssh wget
+which emerge
+if [ $? = 0 ]; then
+  # Gentoo
+  DISTRO='gentoo'
+  
+  qlist -I | grep gentoolkit
+  if [ ! $? = 0 ]; then
+    sudo emerge gentoolkit
+  fi
+  qlist -I | grep zlib
+  if [ ! $? = 0 ]; then
+    sudo emerge zlib
+  fi
+  qlist -I | grep readline
+  if [ ! $? = 0 ]; then
+    sudo emerge readline
+  fi
+  qlist -I | grep wget
+  if [ ! $? = 0 ]; then
+    sudo emerge wget
+  fi
+else
+  # Debian
+  DISTRO='debian'
+  sudo aptitude update
+  sudo aptitude install -y build-essential zlib1g zlib1g-dev libssl-dev openssl libreadline5-dev openssh-server openssh-client ssh wget
+fi
 
 # Set default options with allowed overrides
 # Current ruby versions: 1.8.6-p287, 1.8.7-p72, 1.9.1-p243
@@ -36,7 +61,12 @@ fi
 
 if [ "$FORCE_RUBY_UNINSTALL" = 'true' ]; then
   # Remove existing ruby installation
-  sudo aptitude remove -y ruby ruby1.8 libruby1.8
+  if [ "$DISTRO" = 'gentoo' ]; then 
+    sudo emerge -C ruby rubygems mysql-ruby ruby-config ruby-dbi ruby-postgres ruby-shadow
+    unset RUBYOPT
+  else
+    sudo aptitude remove -y ruby ruby1.8 libruby1.8
+  fi
 fi
 
 # Make build dir
