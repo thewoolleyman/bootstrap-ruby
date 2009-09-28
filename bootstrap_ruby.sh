@@ -1,6 +1,6 @@
 #!/bin/bash
 # http://github.com/thewoolleyman/bootstrap-ruby
-# wget http://github.com/thewoolleyman/bootstrap-ruby/tarball/master
+# wget -O bootstrap_ruby.sh http://github.com/thewoolleyman/bootstrap-ruby/raw/master/bootstrap_ruby.sh
 # This script is tested on recent Ubuntu Linux, but it should run on most Debian distros
 
 # Install build prerequisites
