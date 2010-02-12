@@ -48,7 +48,7 @@ function install_ruby {
   # Download and unpack Ruby distribution
   sudo rm -f ruby-$RUBY_VERSION.tar.gz
   wget ftp://ftp.ruby-lang.org/pub/ruby/$RUBY_MINOR_VERSION/ruby-$RUBY_VERSION.tar.gz
-  sudo rm -f ruby-$RUBY_VERSION
+  sudo rm -rf ruby-$RUBY_VERSION
   tar -zxvf ruby-$RUBY_VERSION.tar.gz
 
   # Update extensions Setup by deleting “Win” lines (Win32API and win32ole) and uncommenting all other lines
