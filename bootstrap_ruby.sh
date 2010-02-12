@@ -6,6 +6,7 @@
 # Install build prerequisites
 sudo aptitude update
 sudo aptitude install -y build-essential zlib1g zlib1g-dev libssl-dev openssl libreadline5-dev openssh-server openssh-client ssh wget
+sudo yum install -y gcc gcc-c++ kernel-devel zlib-devel openssl-devel readline-devel
 
 # Set default options with allowed overrides
 # Current ruby versions: 1.8.6-p287, 1.8.7-p72, 1.9.1-p243
